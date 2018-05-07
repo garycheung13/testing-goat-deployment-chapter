@@ -43,7 +43,8 @@ class NewVisitorTest(unittest.TestCase):
         rows = table.find_elements_by_tag_name('tr')
         # test passes if any row contains the item
         self.assertTrue(
-            any(row.text == '1: Buy peacock feathers' for row in rows)
+            any(row.text == '1: Buy peacock feathers' for row in rows),
+            "New to-do did not appear in table"
         )
 
         self.fail('Finish the test!')
