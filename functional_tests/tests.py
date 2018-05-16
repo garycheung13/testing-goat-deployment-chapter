@@ -1,12 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
-import unittest
+from django.test import LiveServerTestCase
 
 # functional tests subclass the TestCase class
 
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
     # special function inherited from unittest parent class
     # called before running tests
     def setUp(self):
@@ -25,7 +25,8 @@ class NewVisitorTest(unittest.TestCase):
     # methods starting with test will be ran by test runner
     def test_can_start_a_list_and_retrieve_it_later(self):
         # check out homepage
-        self.browser.get('http://localhost:8000')
+        # django live server test parent class gives us this property
+        self.browser.get(self.live_server_url)
         # user notices the page title
         self.assertIn('To-Do', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
@@ -52,9 +53,6 @@ class NewVisitorTest(unittest.TestCase):
         time.sleep(1)
 
         self.check_for_row_in_list_table('1: Buy peacock feathers')
-        self.check_for_row_in_list_table('2: Use peacock feathers to make a fly')
+        self.check_for_row_in_list_table(
+            '2: Use peacock feathers to make a fly')
         self.fail('Finish the test!')
-
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')

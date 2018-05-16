@@ -1,5 +1,5 @@
 # django functions
-from django.test import TestCase
+from django.test import LiveServerTestCase
 from django.urls import resolve
 from django.http import HttpRequest
 
@@ -29,6 +29,7 @@ class HomePageTest(TestCase):
         # checking for template match instead of trying to check diffrent different marku[]
         self.assertTemplateUsed(response, 'home.html')
 
+    # django flushes db between tests so this logic should always work
     def test_can_save_a_POST_request(self):
         # make a request using the test client
         response = self.client.post('/', data={'item_text': 'A new list item'})
@@ -52,6 +53,7 @@ class HomePageTest(TestCase):
         self.assertEqual(Item.objects.count(), 0)
 
     def test_displays_all_list_items(self):
+        # shorthand for adding fields and saving
         Item.objects.create(text='itemey 1')
         Item.objects.create(text='itemey 2')
 
