@@ -20,6 +20,8 @@ class NewVisitorTest(LiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
+    # either finds the text content and test passes
+    # or times out if not found
     def wait_for_row_in_list_table(self, row_text):
         start_time = time.time()  # current time
         while True:
@@ -38,6 +40,7 @@ class NewVisitorTest(LiveServerTestCase):
                 time.sleep(0.5)
 
     # methods starting with test will be ran by test runner
+    # tests if home page has the proper content
     def test_can_start_a_list_and_retrieve_it_later(self):
         # check out homepage
         # django live server test parent class gives us this property
