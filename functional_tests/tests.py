@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 import time
+import os
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 MAX_WAIT = 10
@@ -14,6 +15,9 @@ class NewVisitorTest(StaticLiveServerTestCase):
     # called before running tests
     def setUp(self):
         self.browser = webdriver.Firefox()
+        staging_server = os.environ.get('STAGING_SERVER')
+        if staging_server:
+            self.live_server_url = 'http://' + staging_server
 
     # special function inherited from unittest parent class
     # called after running tests
