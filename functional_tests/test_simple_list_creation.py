@@ -1,51 +1,14 @@
+# webdriver is imported again because a method in the subclass creates a new session
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import WebDriverException
-import time
-import os
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-MAX_WAIT = 10
+from .base import FunctionalTest
 
-# functional tests subclass the TestCase class
-
-
-class NewVisitorTest(StaticLiveServerTestCase):
-    # special function inherited from unittest parent class
-    # called before running tests
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-        staging_server = os.environ.get('STAGING_SERVER')
-        if staging_server:
-            self.live_server_url = 'http://' + staging_server
-
-    # special function inherited from unittest parent class
-    # called after running tests
-    def tearDown(self):
-        self.browser.quit()
-
-    # either finds the text content and test passes
-    # or times out if not found
-    def wait_for_row_in_list_table(self, row_text):
-        start_time = time.time()  # current time
-        while True:
-            try:
-                table = self.browser.find_element_by_id('id_list_table')
-                rows = table.find_elements_by_tag_name('tr')
-                self.assertIn(row_text, [row.text for row in rows])
-                return
-            except (AssertionError, WebDriverException) as e:
-                # if time difference greater than max wait time,
-                # throw the exception that prevented the test from passing
-                # will tell us if it was because page didn't load (WebDriverException) or
-                # because test actually failed (Assertion error)
-                if (time.time() - start_time) > MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
-
+# inherits the setup and teardown methods from parent class
+class NewVisitorTest(FunctionalTest):
     # methods starting with test will be ran by test runner
     # tests if home page has the proper content
-    def test_can_start_a_list_and_retrieve_it_later(self):
+    def test_can_start_a_list_for_one_user(self):
         # check out homepage
         # django live server test parent class gives us this property
         self.browser.get(self.live_server_url)
@@ -72,7 +35,6 @@ class NewVisitorTest(StaticLiveServerTestCase):
         inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('Use peacock feathers to make a fly')
         inputbox.send_keys(Keys.ENTER)
-        time.sleep(1)
 
         self.wait_for_row_in_list_table('1: Buy peacock feathers')
         self.wait_for_row_in_list_table(
@@ -116,24 +78,3 @@ class NewVisitorTest(StaticLiveServerTestCase):
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy peacock feathers', page_text)
         self.assertIn('Buy milk', page_text)
-
-    def test_layout_and_styling(self):
-        self.browser.get(self.live_server_url)
-        self.browser.set_window_size(1024, 768)
-
-        inputbox = self.browser.find_element_by_id('id_new_item')
-        self.assertAlmostEqual(
-            inputbox.location['x'] + inputbox.size['width']/2,
-            512,
-            delta=10
-        )
-
-        inputbox.send_keys('testing')
-        inputbox.send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table('1: testing')
-        inputbox = self.browser.find_element_by_id('id_new_item')
-        self.assertAlmostEqual(
-            inputbox.location['x'] + inputbox.size['width']/2,
-            512,
-            delta=10
-        )
