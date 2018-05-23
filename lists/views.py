@@ -29,8 +29,7 @@ def new_list(request):
         item.full_clean()
         item.save()
     except ValidationError:
-        print("prevented creation")
         list_.delete() # delete the list object if the item wasn't valid
         error = "You can't have an empty list item"
         return render(request, 'home.html', {'error': error})
-    return redirect(f'/lists/{list_.id}/')
+    return redirect(list_) # redirect automatically calls get_absolute_url to resolve this function
