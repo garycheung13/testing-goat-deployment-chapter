@@ -27,3 +27,9 @@ class ItemForm(forms.models.ModelForm):
         error_messages = {
             'text': {'required': EMPTY_ITEM_ERROR }
         }
+
+    # overloading the save method from the parent modelform class
+    def save(self, for_list):
+        # self.istance is an instance of the model object defined in class Meta
+        self.instance.list = for_list
+        return super().save()
